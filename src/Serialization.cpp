@@ -1,17 +1,5 @@
-
 #include "Serialization.h"
-
-
-void BaseData<SaveDataLHS, SaveDataRHS>::SetData(SaveDataLHS formId, SaveDataRHS value) {
-    Locker locker(m_Lock);
-    m_Data[formId] = value;
-}
-
-
-void BaseData<SaveDataLHS, SaveDataRHS>::Clear() {
-    Locker locker(m_Lock);
-    m_Data.clear();
-}
+#include "Utils.h"
 
 [[nodiscard]] bool SaveLoadData::Save(SKSE::SerializationInterface* serializationInterface) {
     assert(serializationInterface);

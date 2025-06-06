@@ -1,12 +1,15 @@
 #include "Manager.h"
+#include "Settings.h"
+#include "Utils.h"
 
 
-const bool Manager::RemoveFavorite(const FormID formid) {
+bool Manager::RemoveFavorite(const FormID formid) {
 	const auto removed = favorites.erase(formid);
 	hotkey_map.erase(formid);
     return removed;
 };
-const int Manager::GetHotkey(const RE::InventoryEntryData* a_entry) const { 
+
+int Manager::GetHotkey(const RE::InventoryEntryData* a_entry) const { 
     if (!a_entry) {
         logger::warn("GetHotkey: Entry is null.");
         return -1;
@@ -31,7 +34,7 @@ const int Manager::GetHotkey(const RE::InventoryEntryData* a_entry) const {
     return -1;
 }
 
-const inline bool Manager::IsHotkeyValid(const int hotkey) const { 
+inline bool Manager::IsHotkeyValid(const int hotkey) const { 
     return allowed_hotkeys.contains(hotkey);
 }
 
@@ -50,7 +53,7 @@ void Manager::UpdateHotkeyMap(const FormID spell_formid, const int a_hotkey) {
 	}
 }
 
-const std::map<unsigned int, FormID> Manager::GetInventoryHotkeys() const { 
+std::map<unsigned int, FormID> Manager::GetInventoryHotkeys() const { 
     std::map<unsigned int,FormID> hotkeys_in_use;
     const auto player_inventory = RE::PlayerCharacter::GetSingleton()->GetInventory();
     for (auto& item : player_inventory) {
@@ -69,7 +72,7 @@ const std::map<unsigned int, FormID> Manager::GetInventoryHotkeys() const {
     return hotkeys_in_use;
 }
 
-const std::map<FormID,unsigned int> Manager::GetMagicHotkeys() const { 
+std::map<FormID,unsigned int> Manager::GetMagicHotkeys() const { 
     std::map<FormID,unsigned int> hotkeys_in_use;
     const auto& mg_hotkeys = RE::MagicFavorites::GetSingleton()->hotkeys;
     unsigned int index = 0;
@@ -87,7 +90,7 @@ const std::map<FormID,unsigned int> Manager::GetMagicHotkeys() const {
 	return hotkeys_in_use;
 };
 
-const std::map<unsigned int,FormID> Manager::GetHotkeysInUse() const {
+std::map<unsigned int,FormID> Manager::GetHotkeysInUse() const {
     const auto& inventory_hotkeys = GetInventoryHotkeys();
     const auto& magic_hotkeys = GetMagicHotkeys();
     std::map<unsigned int, FormID> hotkeys_in_use;
@@ -100,7 +103,7 @@ const std::map<unsigned int,FormID> Manager::GetHotkeysInUse() const {
     return hotkeys_in_use;
 };
 
-const FormID Manager::HotkeyIsInUse(const FormID formid, const int a_hotkey) const {
+FormID Manager::HotkeyIsInUse(const FormID formid, const int a_hotkey) const {
     if (!IsHotkeyValid(a_hotkey)) {
         logger::error("Hotkey invalid. Hotkey: {}", a_hotkey);
         return formid;
@@ -254,7 +257,7 @@ void Manager::SyncHotkeys() {
 	SyncHotkeys_Spell();
 }
 
-const bool Manager::IsSpellFavorited(const FormID a_spell, const RE::BSTArray<RE::TESForm*>& favs) const {
+bool Manager::IsSpellFavorited(const FormID a_spell, const RE::BSTArray<RE::TESForm*>& favs) {
     for (auto& fav : favs) {
 		if (!fav) continue;
 		if (fav->GetFormID() == a_spell) return true;

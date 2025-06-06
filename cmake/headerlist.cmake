@@ -4,5 +4,4 @@ set(headers ${headers}
 	include/Serialization.h
 	include/Manager.h
 	include/Events.h
-	include/Hooks.h
 )

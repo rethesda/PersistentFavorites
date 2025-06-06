@@ -1,4 +1,6 @@
 #include "Events.h"
+#include "Settings.h"
+#include "Utils.h"
 
 
 RE::BSEventNotifyControl myEventSink::ProcessEvent(RE::InputEvent* const* evns, RE::BSTEventSource<RE::InputEvent*>*) {

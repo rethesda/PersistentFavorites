@@ -1,8 +1,4 @@
-
-
 #pragma once
-#include "Settings.h"
-
 
 using SaveDataLHS = std::pair<RE::FormID, std::string>;
 using SaveDataRHS = int;
@@ -14,15 +10,21 @@ template <typename T, typename U>
 class BaseData {
 public:
 
-    void SetData(T formId, U value);
+    void SetData(T formId, U value) {
+        Locker locker(m_Lock);
+        m_Data[formId] = value;
+    }
 
     virtual const char* GetType() = 0;
 
-    virtual bool Save(SKSE::SerializationInterface*, std::uint32_t, std::uint32_t) { return false; };
+    virtual bool Save(SKSE::SerializationInterface*, std::uint32_t, std::uint32_t)=0;
     virtual bool Save(SKSE::SerializationInterface*) { return false; };
-    virtual bool Load(SKSE::SerializationInterface*, unsigned int) { return false; };
+    virtual bool Load(SKSE::SerializationInterface* serializationInterface, unsigned int plugin_version)=0;
 
-    void Clear();
+    void Clear() {
+        Locker locker(m_Lock);
+        m_Data.clear();
+    }
 
     virtual void DumpToLog() = 0;
 

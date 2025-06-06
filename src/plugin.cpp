@@ -1,8 +1,11 @@
-
 #include "Events.h"
+#include "Settings.h"
+#include "Utils.h"
 
-auto* eventSink = myEventSink::GetSingleton();
-bool eventsinks_added = false;
+namespace {
+    auto* eventSink = myEventSink::GetSingleton();
+    bool eventsinks_added = false;
+}
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {

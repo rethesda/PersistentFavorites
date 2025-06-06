@@ -4,7 +4,7 @@
 
 #define ENABLE_IF_NOT_UNINSTALLED if (isUninstalled) return;
 
-class Manager : public SaveLoadData, public RE::Actor::ForEachSpellVisitor {
+class Manager final : public SaveLoadData, public RE::Actor::ForEachSpellVisitor {
 
     std::set<FormID> favorites;
     std::map<FormID, unsigned int> hotkey_map;
@@ -13,28 +13,28 @@ class Manager : public SaveLoadData, public RE::Actor::ForEachSpellVisitor {
     bool isUninstalled = false;
 
     const std::set<unsigned int> allowed_hotkeys = {0,1,2,3,4,5,6,7};
-    
-    const bool RemoveFavorite(const FormID formid);
 
-    const int GetHotkey(const RE::InventoryEntryData* a_entry) const ;
+    bool RemoveFavorite(FormID formid);
 
-    const bool IsHotkeyValid(const int hotkey) const;
+    int GetHotkey(const RE::InventoryEntryData* a_entry) const;
 
-    void UpdateHotkeyMap(const FormID item_formid, const RE::InventoryEntryData* a_entry);
+    [[nodiscard]] bool IsHotkeyValid(int hotkey) const;
 
-    void UpdateHotkeyMap(const FormID spell_formid, const int a_hotkey);
+    void UpdateHotkeyMap(FormID item_formid, const RE::InventoryEntryData* a_entry);
 
-    const std::map<unsigned int, FormID> GetInventoryHotkeys() const;
+    void UpdateHotkeyMap(FormID spell_formid, int a_hotkey);
 
-    const std::map<FormID, unsigned int> GetMagicHotkeys() const;
-    
-    const std::map<unsigned int, FormID> GetHotkeysInUse() const;
+    [[nodiscard]] std::map<unsigned int, FormID> GetInventoryHotkeys() const;
 
-    const FormID HotkeyIsInUse(const FormID, const int a_hotkey) const;
+    [[nodiscard]] std::map<FormID, unsigned int> GetMagicHotkeys() const;
 
-    void HotkeySpell(RE::TESForm* form, const unsigned int hotkey);
+    [[nodiscard]] std::map<unsigned int, FormID> GetHotkeysInUse() const;
 
-    void ApplyHotkey(const FormID formid);
+    [[nodiscard]] FormID HotkeyIsInUse(FormID, int a_hotkey) const;
+
+    static void HotkeySpell(RE::TESForm* form, unsigned int hotkey);
+
+    void ApplyHotkey(FormID formid);
 
     void SyncHotkeys_Item();
 
@@ -42,9 +42,9 @@ class Manager : public SaveLoadData, public RE::Actor::ForEachSpellVisitor {
 
     void SyncHotkeys();
 
-    const bool IsSpellFavorited(const FormID a_spell,const RE::BSTArray<RE::TESForm*>& favs) const;
+    static bool IsSpellFavorited(FormID a_spell,const RE::BSTArray<RE::TESForm*>& favs);
 
-    RE::BSContainer::ForEachResult Visit(RE::SpellItem* a_spell);
+    RE::BSContainer::ForEachResult Visit(RE::SpellItem* a_spell) override;
 
     void CollectPlayerSpells();
 
@@ -68,13 +68,13 @@ public:
 
     void SyncFavorites();
 
-    void FavoriteCheck_Item(const FormID formid);
+    void FavoriteCheck_Item(FormID formid);
 
-    void FavoriteCheck_Spell(const FormID formid);
+    void FavoriteCheck_Spell(FormID formid);
 
     void FavoriteCheck_Spell();
-    
-    inline void Uninstall() { isUninstalled = true; };
+
+    void Uninstall() { isUninstalled = true; };
 
     void Reset();
 
