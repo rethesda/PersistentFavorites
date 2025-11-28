@@ -182,6 +182,10 @@ void Manager::ApplyHotkey(const FormID formid) {
     if (item == player_inventory.end()) {
         return;
     }
+    if (!item->second.second || !item->second.second->extraLists || item->second.second->extraLists->empty()) {
+        logger::error("ApplyHotkey: InventoryEntryData or extraLists invalid. FormID: {:x}", formid);
+        return;
+    }
     auto* xList = item->second.second->extraLists->front();
     if (!xList) {
         logger::error("ApplyHotkey: ExtraList is null. FormID: {:x}", formid);
@@ -236,9 +240,10 @@ void Manager::SyncHotkeys_Spell() {
     }
 }
 
-void Manager::SyncHotkeys() {
-    SyncHotkeys_Item();
-    SyncHotkeys_Spell();
+void Manager::SyncFavorites() {
+    std::unique_lock lock(mutex_);
+    SyncFavorites_Item();
+    SyncFavorites_Spell();
 }
 
 RE::BSContainer::ForEachResult Manager::Visit(RE::SpellItem* a_spell) {
@@ -414,7 +419,6 @@ void Manager::Reset() {
 }
 
 void Manager::SendData() {
-
     logger::info("--------Sending data---------");
     Clear();
 
@@ -448,7 +452,6 @@ void Manager::ReceiveData() {
         logger::warn("ReceiveData: No data to receive.");
         return;
     }
-
 
     std::unique_lock lock(mutex_);
     int n_instances = 0;
@@ -484,6 +487,7 @@ void Manager::ReceiveData() {
         n_instances++;
     }
 
+    lock.unlock();
     SyncHotkeys();
 
     logger::info("Data received. Number of instances: {}", n_instances);
