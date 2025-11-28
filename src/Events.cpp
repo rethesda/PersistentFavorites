@@ -15,7 +15,7 @@ RE::BSEventNotifyControl EventSink::ProcessEvent(RE::InputEvent* const* evns, RE
     if (!*evns) return RE::BSEventNotifyControl::kContinue;
     for (RE::InputEvent* e = *evns; e; e = e->next) {
         if (const RE::ButtonEvent* a_event = e->AsButtonEvent()) {
-            if (a_event->IsPressed() || a_event->IsHeld()) continue;
+            if (!a_event->IsUp()) continue;
             const RE::IDEvent* id_event = e->AsIDEvent();
             const auto& user_event = id_event->userEvent;
             const auto user_events = RE::UserEvents::GetSingleton();
