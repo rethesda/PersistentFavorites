@@ -1,12 +1,9 @@
 #include "Events.h"
+#include "Hooks.h"
 #include "Manager.h"
 #include "CLibUtilsQTR/StringHelpers.hpp"
 
 namespace {
-    bool IsFavoritesMenuOpen() {
-        return RE::UI::GetSingleton()->IsMenuOpen(RE::FavoritesMenu::MENU_NAME);
-    }
-
     bool IsHotkeyEvent(const RE::BSFixedString& event_name) {
         return StringHelpers::includesString(event_name.data(), {"Hotkey"});
     }
@@ -14,6 +11,7 @@ namespace {
 
 
 RE::BSEventNotifyControl EventSink::ProcessEvent(RE::InputEvent* const* evns, RE::BSTEventSource<RE::InputEvent*>*) {
+    if (!Hooks::IsAnyMenuOpen()) return RE::BSEventNotifyControl::kContinue;
     if (!*evns) return RE::BSEventNotifyControl::kContinue;
     for (RE::InputEvent* e = *evns; e; e = e->next) {
         if (const RE::ButtonEvent* a_event = e->AsButtonEvent()) {
@@ -21,14 +19,15 @@ RE::BSEventNotifyControl EventSink::ProcessEvent(RE::InputEvent* const* evns, RE
             const RE::IDEvent* id_event = e->AsIDEvent();
             const auto& user_event = id_event->userEvent;
             const auto user_events = RE::UserEvents::GetSingleton();
-            if (IsHotkeyEvent(user_event) && IsFavoritesMenuOpen()) {
+            if (IsHotkeyEvent(user_event) && Hooks::IsFavoritesMenuOpen()) {
                 Manager::GetSingleton()->SyncFavorites();
+                return RE::BSEventNotifyControl::kContinue;
             }
-            else if (user_event == user_events->toggleFavorite || user_event == user_events->yButton){
+            if (user_event == user_events->toggleFavorite || user_event == user_events->yButton){
                 Manager::GetSingleton()->SyncFavorites();
+                return RE::BSEventNotifyControl::kContinue;
             }
         }
-        return RE::BSEventNotifyControl::kContinue;
     }
     return RE::BSEventNotifyControl::kContinue;
 }
