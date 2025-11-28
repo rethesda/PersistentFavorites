@@ -11,5 +11,5 @@ namespace Settings {
         {kSerializationVersion, 2}
     };
 
-    static constexpr unsigned int instance_limit = 100000;
+    static constexpr unsigned int instance_limit = 10000;
 };
