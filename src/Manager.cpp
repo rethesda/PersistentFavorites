@@ -240,10 +240,10 @@ void Manager::SyncHotkeys_Spell() {
     }
 }
 
-void Manager::SyncFavorites() {
+void Manager::SyncHotkeys() {
     std::unique_lock lock(mutex_);
-    SyncFavorites_Item();
-    SyncFavorites_Spell();
+    SyncHotkeys_Item();
+    SyncHotkeys_Spell();
 }
 
 RE::BSContainer::ForEachResult Manager::Visit(RE::SpellItem* a_spell) {
