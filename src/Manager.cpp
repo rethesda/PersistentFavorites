@@ -454,10 +454,13 @@ void Manager::SendData() {
     for (auto& fav_id : favorites) {
         const auto temp_form = FormReader::GetFormByID(fav_id);
         if (!temp_form) continue;
-        const auto temp_editorid = clib_util::editorID::get_editorID(temp_form);
-        if (temp_editorid.empty()) {
-            logger::error("SendData: EditorID is empty. FormID: {:x}", fav_id);
-            continue;
+        std::string temp_editorid;
+        if (!temp_form->IsDynamicForm()) {
+            temp_editorid = clib_util::editorID::get_editorID(temp_form);
+            if (temp_editorid.empty()) {
+                logger::error("SendData: EditorID is empty. FormID: {:x}", fav_id);
+                continue;
+            }
         }
         const SaveDataLHS lhs({fav_id, temp_editorid});
         const int rhs = hotkey_map.contains(fav_id) && IsHotkeyValid(hotkey_map.at(fav_id))
@@ -486,11 +489,7 @@ void Manager::ReceiveData() {
         auto source_formid = lhs.first;
         auto source_editorid = lhs.second;
 
-        if (source_editorid.empty()) {
-            logger::error("ReceiveData: EditorID is empty.");
-            continue;
-        }
-        const auto source_form = FormReader::GetFormByID(0, source_editorid);
+        const auto source_form = FormReader::GetFormByID(source_formid, source_editorid);
         if (!source_form) {
             logger::critical("ReceiveData: Source form not found. Saved formid: {:x}, editorid: {}", source_formid,
                              source_editorid);
@@ -500,6 +499,11 @@ void Manager::ReceiveData() {
             logger::warn("ReceiveData: Source formid does not match. Saved formid: {:x}, editorid: {}", source_formid,
                          source_editorid);
             source_formid = source_form->GetFormID();
+        }
+        if (!source_form->GetPlayable()  || !source_form->IsInventoryObject()) {
+            logger::warn("ReceiveData: Source form is not playable or not an inventory object. FormID: {:x}, EditorID: {}",
+                         source_formid, source_editorid);
+            continue;
         }
 
         if (favorites.contains(source_formid)) {
