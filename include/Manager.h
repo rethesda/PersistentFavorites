@@ -29,7 +29,7 @@ class Manager final : public SaveLoadData, public RE::Actor::ForEachSpellVisitor
 
     [[nodiscard]] FormID HotkeyIsInUse(FormID, int a_hotkey) const;
 
-    void ApplyHotkey(FormID formid);
+    void ApplyHotkey(FormID formid, const RE::TESObjectREFR::InventoryItemMap& inv);
 
     void SyncHotkeys_Item();
 

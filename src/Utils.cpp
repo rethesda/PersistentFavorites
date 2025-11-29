@@ -21,27 +21,20 @@ namespace Utils {
         };
     };
 
-    bool FavoriteItem(RE::InventoryChanges* a_owner, const FormID a_itemID) {
-        const auto& entries = a_owner->entryList;
-        if (!entries) {
-            logger::error("Owner's entry list is null");
-            return false;
-        }
-        for (auto it = entries->begin(); it != entries->end(); ++it) {
-            const auto inv_entry = *it;
-            if (!inv_entry) {
-                logger::error("Item entry is null");
-                continue;
+    bool FavoriteItem(const RE::TESForm* a_item, const RE::TESObjectREFR::InventoryItemMap& inv) {
+        const auto player = RE::PlayerCharacter::GetSingleton();
+        if (const auto invChanges = player->GetInventoryChanges()) {
+            for (const auto& [item, data] : inv) {
+                const auto& [count, entry] = data;
+                if (count > 0 && item == a_item) {
+                    if (entry->IsFavorited()) {
+                        return true;
+                    }
+                    const auto extralist = entry->extraLists && !entry->extraLists->empty() ? entry->extraLists->front() : nullptr;
+                    invChanges->SetFavorite(entry.get(), extralist);
+                    return true;
+                }
             }
-            const auto a_object = inv_entry->GetObject();
-            if (!a_object) continue;
-            if (a_object->GetFormID() != a_itemID) continue;
-
-            if (inv_entry->IsFavorited()) {
-                return true;
-            }
-            a_owner->SetFavorite(inv_entry, nullptr);
-            return true;
         }
         return false;
     }
