@@ -499,7 +499,7 @@ void Manager::ReceiveData() {
             source_formid = source_form->GetFormID();
         }
         if (!source_form->GetPlayable()) {
-            logger::warn("ReceiveData: Source form is not playable or not an inventory object. FormID: {:x}, EditorID: {}",
+            logger::warn("ReceiveData: Source form is not playable. FormID: {:x}, EditorID: {}",
                          source_formid, source_editorid);
             continue;
         }
