@@ -4,7 +4,6 @@
 class EventSink : public clib_util::singleton::ISingleton<EventSink>,
                   public RE::BSTEventSink<RE::TESContainerChangedEvent>,
                   public RE::BSTEventSink<RE::SpellsLearned::Event> {
-
     RE::BSEventNotifyControl ProcessEvent(const RE::TESContainerChangedEvent* a_event,
                                           RE::BSTEventSource<RE::TESContainerChangedEvent>*) override;
 

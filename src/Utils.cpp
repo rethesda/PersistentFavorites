@@ -30,7 +30,9 @@ namespace Utils {
                     if (entry->IsFavorited()) {
                         return true;
                     }
-                    const auto extralist = entry->extraLists && !entry->extraLists->empty() ? entry->extraLists->front() : nullptr;
+                    const auto extralist = entry->extraLists && !entry->extraLists->empty()
+                                               ? entry->extraLists->front()
+                                               : nullptr;
                     invChanges->SetFavorite(entry.get(), extralist);
                     return true;
                 }

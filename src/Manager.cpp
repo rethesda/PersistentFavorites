@@ -250,7 +250,8 @@ void Manager::SyncHotkeys() {
 
 RE::BSContainer::ForEachResult Manager::Visit(RE::SpellItem* a_spell) {
     if (!a_spell || !a_spell->GetPlayable()) return RE::BSContainer::ForEachResult::kContinue;
-    if (const char* spell_name = a_spell->GetName(); !spell_name || spell_name[0] == '\0') return RE::BSContainer::ForEachResult::kContinue;
+    if (const char* spell_name = a_spell->GetName(); !spell_name || spell_name[0] == '\0') return
+        RE::BSContainer::ForEachResult::kContinue;
     temp_all_spells.insert(a_spell->GetFormID());
     return RE::BSContainer::ForEachResult::kContinue;
 }
@@ -286,7 +287,9 @@ bool Manager::AddFavorites_Item() {
             }
             UpdateHotkeyMap(a_formid, snd.second.get());
         } else if (favorites.contains(a_formid)) {
-            const auto xList = snd.second->extraLists && !snd.second->extraLists->empty() ? snd.second->extraLists->front() : nullptr;
+            const auto xList = snd.second->extraLists && !snd.second->extraLists->empty()
+                                   ? snd.second->extraLists->front()
+                                   : nullptr;
             inv_changes->SetFavorite(snd.second.get(), xList);
             favorited_any = true;
             ApplyHotkey(a_formid, player_inventory);

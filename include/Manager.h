@@ -1,18 +1,16 @@
-
 #pragma once
 #include <shared_mutex>
 #include <unordered_set>
 #include "Serialization.h"
 
 class Manager final : public SaveLoadData, public RE::Actor::ForEachSpellVisitor {
-
     std::shared_mutex mutex_;
 
     std::unordered_set<FormID> favorites;
     std::unordered_map<FormID, int> hotkey_map;
     std::unordered_set<FormID> temp_all_spells;
 
-    const std::set<int> allowed_hotkeys = {0,1,2,3,4,5,6,7};
+    const std::set<int> allowed_hotkeys = {0, 1, 2, 3, 4, 5, 6, 7};
 
     bool RemoveFavorite(FormID formid);
 
@@ -46,6 +44,7 @@ class Manager final : public SaveLoadData, public RE::Actor::ForEachSpellVisitor
     void SyncFavorites_Item();
     void SyncFavorites_Spell();
     void FavoriteCheck_Spell(FormID formid);
+
 public:
     static Manager* GetSingleton() {
         static Manager singleton;
@@ -60,5 +59,4 @@ public:
     void Reset();
     void SendData();
     void ReceiveData();
-
 };
