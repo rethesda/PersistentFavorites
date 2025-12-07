@@ -1,12 +1,5 @@
 #include "Events.h"
 #include "Manager.h"
-#include "CLibUtilsQTR/StringHelpers.hpp"
-
-namespace {
-    bool IsHotkeyEvent(const RE::BSFixedString& event_name) {
-        return StringHelpers::includesString(event_name.data(), {"Hotkey"});
-    }
-}
 
 RE::BSEventNotifyControl EventSink::ProcessEvent(const RE::TESContainerChangedEvent* a_event,
                                                  RE::BSTEventSource<RE::TESContainerChangedEvent>*) {
