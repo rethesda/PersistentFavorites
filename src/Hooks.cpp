@@ -16,11 +16,15 @@ RE::UI_MESSAGE_RESULTS Hooks::MenuHook<MenuType>::ProcessMessage_Hook(RE::UIMess
 
     if (msg_type == 1) {
         is_menu_open = true;
-        Manager::GetSingleton()->AddFavorites();
+        SKSE::GetTaskInterface()->AddTask([] {
+            Manager::GetSingleton()->AddFavorites();
+        });
     }
     if (msg_type == 3) {
         is_menu_open = false;
-        Manager::GetSingleton()->SyncFavorites();
+        SKSE::GetTaskInterface()->AddTask([] {
+            Manager::GetSingleton()->SyncFavorites();
+        });
     }
 
     return _ProcessMessage(this, a_message);
