@@ -14,6 +14,9 @@ namespace {
             const auto spellsource = RE::SpellsLearned::GetEventSource();
             spellsource->AddEventSink(eventSink);
         }
+        if (message->type == SKSE::MessagingInterface::kPostLoadGame) {
+            Manager::GetSingleton()->CleanseMagicFavorites();
+        }
     }
 }
 
