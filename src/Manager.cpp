@@ -435,8 +435,8 @@ void Manager::CleanseMagicFavorites() {
                      RE::FormTypeToString(form_type), name);
     }
 
-    for (std::unique_lock lock(mutex_); 
-        const auto& favorite : problematic_favs) {
+    for (std::unique_lock lock(mutex_);
+         const auto& favorite : problematic_favs) {
         magic_favorites->RemoveFavorite(favorite);
         RemoveFavorite(favorite->GetFormID());
     }
@@ -538,8 +538,9 @@ void Manager::ReceiveData() {
             continue;
         }
         if (clib_util::editorID::get_editorID(source_form) != source_editorid) {
-            logger::error("ReceiveData: Source formid does not match. Saved formid: {:x}, editorid: {}", source_formid,
-                          source_editorid);
+            logger::error(
+                "ReceiveData: Source form editorID mismatch. FormID: {:x}, Saved EditorID: {}, Actual EditorID: {}",
+                source_formid, source_editorid, clib_util::editorID::get_editorID(source_form));
             continue;
         }
         if (!source_form->GetPlayable()) {
