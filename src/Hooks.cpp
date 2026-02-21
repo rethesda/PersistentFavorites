@@ -2,10 +2,10 @@
 #include "Manager.h"
 
 void Hooks::Install() {
-    MenuHook<RE::ContainerMenu>::InstallHook(RE::VTABLE_ContainerMenu[0]);
-    MenuHook<RE::InventoryMenu>::InstallHook(RE::VTABLE_InventoryMenu[0]);
-    MenuHook<RE::FavoritesMenu>::InstallHook(RE::VTABLE_FavoritesMenu[0]);
-    MenuHook<RE::MagicMenu>::InstallHook(RE::VTABLE_MagicMenu[0]);
+    MenuHook<RE::ContainerMenu>::InstallHook();
+    MenuHook<RE::InventoryMenu>::InstallHook();
+    MenuHook<RE::FavoritesMenu>::InstallHook();
+    MenuHook<RE::MagicMenu>::InstallHook();
 
     MoveItemHooks<RE::PlayerCharacter>::install();
 }
@@ -31,9 +31,9 @@ RE::UI_MESSAGE_RESULTS Hooks::MenuHook<MenuType>::ProcessMessage_Hook(RE::UIMess
 }
 
 template <typename MenuType>
-void Hooks::MenuHook<MenuType>::InstallHook(const REL::VariantID& varID) {
-    REL::Relocation<std::uintptr_t> vTable(varID);
-    _ProcessMessage = vTable.write_vfunc(0x4, &MenuHook<MenuType>::ProcessMessage_Hook);
+void Hooks::MenuHook<MenuType>::InstallHook() {
+    REL::Relocation vTable(MenuType::VTABLE[0]);
+    _ProcessMessage = vTable.write_vfunc(0x4, &MenuHook::ProcessMessage_Hook);
 }
 
 template <typename RefType>
