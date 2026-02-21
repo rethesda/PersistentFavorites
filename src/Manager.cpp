@@ -314,7 +314,7 @@ bool Manager::AddFavorites_Spell() {
     }
     for (auto& spell_formid : temp_all_spells) {
         const auto spell = FormReader::GetFormByID(spell_formid);
-        if (!spell) continue;
+        if (!spell || !Utils::IsMagicMenuItem(spell)) continue;
         if (IsSpellFavorited(spell_formid, favorited_spells)) {
             if (favorites.insert(spell_formid).second) {
             }
@@ -400,13 +400,46 @@ void Manager::FavoriteCheck_Spell(const FormID formid) {
         return;
     }
     const auto spell = FormReader::GetFormByID(formid);
-    if (!spell) {
-        logger::warn("FavoriteCheck_Spell: Form not found. FormID: {}", formid);
+    if (!spell || !Utils::IsMagicMenuItem(spell)) {
+        logger::warn("FavoriteCheck_Spell: Failed check. FormID: {}", formid);
         RemoveFavorite(formid);
         return;
     }
     RE::MagicFavorites::GetSingleton()->SetFavorite(spell);
     ApplyHotkey(formid, {});
+}
+
+void Manager::CleanseMagicFavorites() {
+    const auto magic_favorites = RE::MagicFavorites::GetSingleton();
+    std::vector<RE::TESForm*> problematic_favs;
+    for (const auto& spell : magic_favorites->spells) {
+        if (!spell || Utils::IsMagicMenuItem(spell)) {
+            continue;
+        }
+        const auto form_type = spell->GetFormType();
+        problematic_favs.push_back(spell);
+        auto formID = spell->GetFormID();
+        auto name = spell->GetName();
+        logger::warn("Removing non-spell/shout from Magic Favorites. FormID: {:X} ({}) - {}", formID,
+                     RE::FormTypeToString(form_type), name);
+    }
+    for (const auto& hotkey : magic_favorites->hotkeys) {
+        if (!hotkey || Utils::IsMagicMenuItem(hotkey)) {
+            continue;
+        }
+        const auto form_type = hotkey->GetFormType();
+        problematic_favs.push_back(hotkey);
+        auto formID = hotkey->GetFormID();
+        auto name = hotkey->GetName();
+        logger::warn("Removing non-spell/shout from Magic Favorites. FormID: {:X} ({}) - {}", formID,
+                     RE::FormTypeToString(form_type), name);
+    }
+
+    for (std::unique_lock lock(mutex_);
+         const auto& favorite : problematic_favs) {
+        magic_favorites->RemoveFavorite(favorite);
+        RemoveFavorite(favorite->GetFormID());
+    }
 }
 
 void Manager::FavoriteCheck_Spell() {
@@ -434,6 +467,13 @@ void Manager::UpdateFavorite(RE::TESBoundObject* a_item) {
     if (it != player_inv.end() && !it->second.second->IsFavorited()) {
         std::unique_lock lock(mutex_);
         RemoveFavorite(formid);
+    }
+}
+
+void Manager::HandleFormDelete(const FormID a_formid) {
+    std::unique_lock lock(mutex_);
+    if (favorites.contains(a_formid)) {
+        RemoveFavorite(a_formid);
     }
 }
 
@@ -491,16 +531,17 @@ void Manager::ReceiveData() {
         auto source_formid = lhs.first;
         auto source_editorid = lhs.second;
 
-        const auto source_form = FormReader::GetFormByID(source_formid, source_editorid);
+        const auto source_form = FormReader::GetFormByID(source_formid);
         if (!source_form) {
             logger::critical("ReceiveData: Source form not found. Saved formid: {:x}, editorid: {}", source_formid,
                              source_editorid);
             continue;
         }
-        if (source_form->GetFormID() != source_formid) {
-            logger::warn("ReceiveData: Source formid does not match. Saved formid: {:x}, editorid: {}", source_formid,
-                         source_editorid);
-            source_formid = source_form->GetFormID();
+        if (clib_util::editorID::get_editorID(source_form) != source_editorid) {
+            logger::error(
+                "ReceiveData: Source form editorID mismatch. FormID: {:x}, Saved EditorID: {}, Actual EditorID: {}",
+                source_formid, source_editorid, clib_util::editorID::get_editorID(source_form));
+            continue;
         }
         if (!source_form->GetPlayable()) {
             logger::warn("ReceiveData: Source form is not playable. FormID: {:x}, EditorID: {}",

@@ -13,7 +13,7 @@ namespace Hooks {
         RE::UI_MESSAGE_RESULTS ProcessMessage_Hook(RE::UIMessage& a_message);
 
     public:
-        static void InstallHook(const REL::VariantID& varID);
+        static void InstallHook();
     };
 
     template <typename RefType>

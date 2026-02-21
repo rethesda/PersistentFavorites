@@ -13,6 +13,8 @@ namespace Utils {
 
     bool FavoriteItem(const RE::TESForm* a_item, const RE::TESObjectREFR::InventoryItemMap& inv);
 
+    bool IsMagicMenuItem(const RE::TESForm* a_form);
+
     namespace MsgBoxesNotifs {
         namespace Windows {
             int Po3ErrMsg();

@@ -40,4 +40,12 @@ namespace Utils {
         }
         return false;
     }
+
+    bool IsMagicMenuItem(const RE::TESForm* a_form) {
+        const auto formType = a_form ? a_form->GetFormType() : RE::FormType::None;
+        if (formType == RE::FormType::Spell || formType == RE::FormType::Shout) {
+            return true;
+        }
+        return false;
+    }
 };

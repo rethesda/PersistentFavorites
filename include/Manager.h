@@ -2,8 +2,12 @@
 #include <shared_mutex>
 #include <unordered_set>
 #include "Serialization.h"
+#include "REX/REX.h"
 
-class Manager final : public SaveLoadData, public RE::Actor::ForEachSpellVisitor {
+class Manager final :
+    public SaveLoadData,
+    public RE::Actor::ForEachSpellVisitor,
+    public REX::Singleton<Manager> {
     std::shared_mutex mutex_;
 
     std::unordered_set<FormID> favorites;
@@ -46,18 +50,16 @@ class Manager final : public SaveLoadData, public RE::Actor::ForEachSpellVisitor
     void FavoriteCheck_Spell(FormID formid);
 
 public:
-    static Manager* GetSingleton() {
-        static Manager singleton;
-        return &singleton;
-    }
-
     bool AddFavorites();
     void SyncFavorites();
     void FavoriteCheck_Item(FormID formid);
     void FavoriteCheck_Spell();
     void UpdateFavorite(RE::TESBoundObject* a_item);
+    void HandleFormDelete(FormID a_formid);
 
     void Reset();
     void SendData();
     void ReceiveData();
+
+    void CleanseMagicFavorites();
 };
