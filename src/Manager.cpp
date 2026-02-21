@@ -435,7 +435,8 @@ void Manager::CleanseMagicFavorites() {
                      RE::FormTypeToString(form_type), name);
     }
 
-    for (const auto& favorite : problematic_favs) {
+    for (std::unique_lock lock(mutex_); 
+        const auto& favorite : problematic_favs) {
         magic_favorites->RemoveFavorite(favorite);
         RemoveFavorite(favorite->GetFormID());
     }
