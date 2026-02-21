@@ -58,7 +58,7 @@
     m_Data.clear();
 
     for (size_t i = 0; i < recordDataSize; i++) {
-        std::uint32_t formid = 0;
+        std::uint32_t formid;
 
         if (!serializationInterface->ReadRecordData(formid)) {
             logger::error("Failed to read form ID");
