@@ -17,3 +17,9 @@ RE::BSEventNotifyControl EventSink::ProcessEvent(const RE::SpellsLearned::Event*
     Manager::GetSingleton()->FavoriteCheck_Spell();
     return RE::BSEventNotifyControl::kContinue;
 }
+
+RE::BSEventNotifyControl EventSink::ProcessEvent(const RE::TESFormDeleteEvent* a_event,
+                                                 RE::BSTEventSource<RE::TESFormDeleteEvent>*) {
+    Manager::GetSingleton()->HandleFormDelete(a_event->formID);
+    return RE::BSEventNotifyControl::kContinue;
+}

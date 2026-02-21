@@ -9,8 +9,9 @@ namespace {
     void OnMessage(SKSE::MessagingInterface::Message* message) {
         if (message->type == SKSE::MessagingInterface::kDataLoaded) {
             const auto eventSink = EventSink::GetSingleton();
-            auto* eventSourceHolder = RE::ScriptEventSourceHolder::GetSingleton();
+            auto eventSourceHolder = RE::ScriptEventSourceHolder::GetSingleton();
             eventSourceHolder->AddEventSink<RE::TESContainerChangedEvent>(eventSink);
+            eventSourceHolder->AddEventSink<RE::TESFormDeleteEvent>(eventSink);
             const auto spellsource = RE::SpellsLearned::GetEventSource();
             spellsource->AddEventSink(eventSink);
         }

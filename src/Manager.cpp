@@ -469,6 +469,13 @@ void Manager::UpdateFavorite(RE::TESBoundObject* a_item) {
     }
 }
 
+void Manager::HandleFormDelete(const FormID a_formid) {
+    std::unique_lock lock(mutex_);
+    if (favorites.contains(a_formid)) {
+        RemoveFavorite(a_formid);
+    }
+}
+
 void Manager::Reset() {
     logger::info("Resetting manager...");
     std::unique_lock lock(mutex_);

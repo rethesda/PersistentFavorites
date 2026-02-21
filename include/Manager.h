@@ -55,6 +55,7 @@ public:
     void FavoriteCheck_Item(FormID formid);
     void FavoriteCheck_Spell();
     void UpdateFavorite(RE::TESBoundObject* a_item);
+    void HandleFormDelete(FormID a_formid);
 
     void Reset();
     void SendData();
