@@ -531,7 +531,7 @@ void Manager::ReceiveData() {
         }
         if (clib_util::editorID::get_editorID(source_form) != source_editorid) {
             logger::error("ReceiveData: Source formid does not match. Saved formid: {:x}, editorid: {}", source_formid,
-                         source_editorid);
+                          source_editorid);
             continue;
         }
         if (!source_form->GetPlayable()) {

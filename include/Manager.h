@@ -4,10 +4,10 @@
 #include "Serialization.h"
 #include "REX/REX.h"
 
-class Manager final : 
-public SaveLoadData, 
-public RE::Actor::ForEachSpellVisitor,
-public REX::Singleton<Manager>{
+class Manager final :
+    public SaveLoadData,
+    public RE::Actor::ForEachSpellVisitor,
+    public REX::Singleton<Manager> {
     std::shared_mutex mutex_;
 
     std::unordered_set<FormID> favorites;
@@ -50,7 +50,6 @@ public REX::Singleton<Manager>{
     void FavoriteCheck_Spell(FormID formid);
 
 public:
-
     bool AddFavorites();
     void SyncFavorites();
     void FavoriteCheck_Item(FormID formid);
@@ -60,6 +59,6 @@ public:
     void Reset();
     void SendData();
     void ReceiveData();
-    
+
     void CleanseMagicFavorites();
 };
